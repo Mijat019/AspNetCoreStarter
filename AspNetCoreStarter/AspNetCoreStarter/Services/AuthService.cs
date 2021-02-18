@@ -1,13 +1,12 @@
 ﻿using AspNetCoreStarter.Dtos;
-using AspNetCoreStarter.Dtos.User;
 using AspNetCoreStarter.Exceptions;
 using AspNetCoreStarter.Helpers;
 using AspNetCoreStarter.Models;
-using Microsoft.Extensions.Configuration;
+using AspNetCoreStarter.Util;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
+using System.Security.Claims;
 using System.Text;
 
 namespace AspNetCoreStarter.Services
@@ -16,55 +15,49 @@ namespace AspNetCoreStarter.Services
     {
         private readonly UserService _userService;
 
-        private readonly JwtSecurityTokenHandler _jwtHandler;
-        private readonly JwtHeader _definedHeader;
+        private readonly AppSettings _appSettings;
 
-        public AuthService(UserService userService, IConfiguration configuration)
+        public AuthService(UserService userService, AppSettings appSettings)
         {
             _userService = userService;
-
-            _jwtHandler = new JwtSecurityTokenHandler();
-
-            string serverPrivateKey = configuration.GetValue<string>("AppSettings:ServerSecret");
-
-            _definedHeader = new JwtHeader(new SigningCredentials(
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(serverPrivateKey)),
-                SecurityAlgorithms.HmacSha256
-            ));
-
+            _appSettings = appSettings;
         }
 
-        public string GenereateToken(SignInDto dto)
+        public string Auth(SignInDto dto)
         {
-            User found = _userService.Get(dto.Email);
+            User user = _userService.Get(dto.Email);
 
-            if (found == null) throw new BusinessException("Credentials incorrect.", 400);
-            if (found.Password != HashHelper.Hash(dto.Password)) throw new BusinessException("Credentials incorrect.", 400);
+            if (user == null) throw new BusinessException("Incorrect credentials", 400);
 
-            JwtSecurityToken token = new JwtSecurityToken(_definedHeader, new JwtPayload
-            {
-                { "id", found.Id },
-                { "email", found.Email },
-                { "issued at", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ff") },
-            });
+            string hashedPassword = HashHelper.Hash(dto.Password);
 
-            return _jwtHandler.WriteToken(token);
+            if (user.Password != hashedPassword) throw new BusinessException("Incorrect credentials", 400);
+
+            string token = this.GenereateToken(user);
+
+            return token;
         }
 
-        public ClaimsDto Verify(string tokenString)
+        private string GenereateToken(User user)
         {
-            JwtSecurityToken tokenFromrequest = _jwtHandler.ReadJwtToken(tokenString);
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
 
-            JwtSecurityToken token = new JwtSecurityToken(_definedHeader, tokenFromrequest.Payload);
+            byte[] key = Encoding.ASCII.GetBytes(_appSettings.ServerSecret);
 
-            if (_jwtHandler.WriteToken(token) != tokenString)
-                throw new BusinessException("Not authorized.", 401);
+            ClaimsIdentity subject = new ClaimsIdentity(
+                new[] { new Claim("id", user.Id.ToString()) }
+            );
 
-            return new ClaimsDto
+            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
             {
-                Id = tokenFromrequest.Claims.First(e => e.Type == "id").Value,
-                Email = tokenFromrequest.Claims.First(e => e.Type == "email").Value
+                Subject = subject,
+                Expires = DateTime.UtcNow.AddDays(1),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
+
+            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+
+            return tokenHandler.WriteToken(token);
         }
     }
 }

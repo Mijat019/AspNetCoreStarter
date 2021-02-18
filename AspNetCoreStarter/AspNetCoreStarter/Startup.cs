@@ -2,6 +2,7 @@ using AspNetCoreStarter.Context;
 using AspNetCoreStarter.Repositories.Implementations;
 using AspNetCoreStarter.Repositories.Interfaces;
 using AspNetCoreStarter.Services;
+using AspNetCoreStarter.Util;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -25,9 +26,12 @@ namespace AspNetCoreStarter
             services.AddDbContext<AspNetCoreStarterContext>(
                 options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection"));
 
+            services.AddSingleton(Configuration.GetSection("AppSettings").Get<AppSettings>());
+
             services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddScoped<UserService>();
+            services.AddScoped<AuthService>();
 
             services.AddControllers();
         }
@@ -47,7 +51,6 @@ namespace AspNetCoreStarter
 
             app.UseRouting();
 
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

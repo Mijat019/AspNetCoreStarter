@@ -1,6 +1,8 @@
-﻿using AspNetCoreStarter.Dtos;
+﻿using AspNetCoreStarter.Attributes;
+using AspNetCoreStarter.Dtos;
 using AspNetCoreStarter.Services;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 
 namespace AspNetCoreStarter.Controllers
@@ -16,16 +18,50 @@ namespace AspNetCoreStarter.Controllers
             _service = service;
         }
 
+        [Authorize]
         [HttpGet("{id}")]
-        public UserReadDto Get(int id) => _service.Get(id);
+        public ActionResult<UserReadDto> Get(int id)
+        {
+            UserReadDto result = _service.Get(id);
 
+            return Ok(result); 
+        }
+
+        [Authorize]
         [HttpGet]
-        public IEnumerable<UserReadDto> Get() => _service.Get();
+        public ActionResult<IEnumerable<UserReadDto>> Get()
+        {
+            IEnumerable<UserReadDto> result = _service.Get();
+
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpGet("profile-data")]
+        public ActionResult<UserReadDto> GetProfileData()
+        {
+            int userId = Convert.ToInt32(HttpContext.Items["id"]);
+
+            UserReadDto result = _service.Get(userId);
+
+            return Ok(result);
+        }
 
         [HttpPost]
-        public UserReadDto Create(UserCreateDto dto) => _service.Create(dto);
+        public ActionResult<UserReadDto> Create(UserCreateDto dto)
+        {
+            UserReadDto result = _service.Create(dto);
 
+            return Ok(result);
+        }
+
+        [Authorize]
         [HttpDelete]
-        public void Delete(int id) => _service.Delete(id);
+        public ActionResult Delete(int id)
+        {
+            _service.Delete(id);
+
+            return Ok();
+        }
     }
 }
