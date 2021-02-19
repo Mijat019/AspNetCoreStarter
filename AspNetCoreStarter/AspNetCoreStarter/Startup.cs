@@ -29,9 +29,11 @@ namespace AspNetCoreStarter
             services.AddSingleton(Configuration.GetSection("AppSettings").Get<AppSettings>());
 
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ITodoRepository, TodoRepository>();
 
             services.AddScoped<UserService>();
             services.AddScoped<AuthService>();
+            services.AddScoped<TodoService>();
 
             services.AddControllers();
         }

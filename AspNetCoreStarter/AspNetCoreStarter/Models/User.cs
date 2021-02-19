@@ -1,15 +1,11 @@
-﻿using AspNetCoreStarter.Dtos;
-using System;
+﻿using AspNetCoreStarter.Contracts.Enums;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AspNetCoreStarter.Models
 {
-    public class User
+    public class User : Entity
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
         [EmailAddress]
         [MaxLength(256)]
@@ -19,10 +15,9 @@ namespace AspNetCoreStarter.Models
         [MaxLength(256)]
         public string Password { get; set; }
 
-        [Column(TypeName = "datetime")]
-        public DateTime CreatedAt { get; set; }
+        [Required]
+        public Role Role { get; set; }
 
-        [Column(TypeName = "datetime")]
-        public DateTime UpdatedAt { get; set; }
+        public IEnumerable<Todo> Todos { get; set; }
     }
 }

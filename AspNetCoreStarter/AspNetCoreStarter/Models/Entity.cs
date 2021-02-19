@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace AspNetCoreStarter.Dtos
+namespace AspNetCoreStarter.Models
 {
-    public class UserReadDto
+    public abstract class Entity
     {
         public int Id { get; set; }
-        public string Email { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

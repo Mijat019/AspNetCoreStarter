@@ -31,7 +31,7 @@ namespace AspNetCoreStarter.Attributes
             {
                 this.ValidateToken(token);
             }
-            catch
+            catch(Exception e)
             {
                 throw new BusinessException("Token is invalid", 401);
             }
@@ -49,6 +49,9 @@ namespace AspNetCoreStarter.Attributes
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ClockSkew = TimeSpan.Zero
             }, out SecurityToken validatedToken);
 
             JwtSecurityToken jwtToken = (JwtSecurityToken)validatedToken;
