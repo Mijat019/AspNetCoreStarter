@@ -1,4 +1,5 @@
 ﻿using AspNetCoreStarter.Attributes;
+using AspNetCoreStarter.Contracts.Enums;
 using AspNetCoreStarter.Dtos;
 using AspNetCoreStarter.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +28,7 @@ namespace AspNetCoreStarter.Controllers
             return Ok(result); 
         }
 
-        [Authorize]
+        [Authorize(Role.Admin)]
         [HttpGet]
         public ActionResult<IEnumerable<TodoReadDto>> Get()
         {
@@ -37,8 +38,8 @@ namespace AspNetCoreStarter.Controllers
         }
 
         [Authorize]
-        [HttpGet("profile-data")]
-        public ActionResult<TodoReadDto> GetProfileData()
+        [HttpGet("for-user")]
+        public ActionResult<TodoReadDto> GetByUserId()
         {
             int userId = Convert.ToInt32(HttpContext.Items["id"]);
 

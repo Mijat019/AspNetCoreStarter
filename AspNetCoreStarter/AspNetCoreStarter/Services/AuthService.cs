@@ -45,7 +45,11 @@ namespace AspNetCoreStarter.Services
             byte[] key = Encoding.ASCII.GetBytes(_appSettings.ServerSecret);
 
             ClaimsIdentity subject = new ClaimsIdentity(
-                new[] { new Claim("id", user.Id.ToString()) }
+                new[] 
+                {
+                    new Claim("id", user.Id.ToString()),
+                    new Claim("role", user.Role.ToString()),
+                }
             );
 
             SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
