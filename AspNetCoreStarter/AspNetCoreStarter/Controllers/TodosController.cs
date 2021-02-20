@@ -1,6 +1,7 @@
 ﻿using AspNetCoreStarter.Attributes;
 using AspNetCoreStarter.Contracts.Enums;
 using AspNetCoreStarter.Dtos;
+using AspNetCoreStarter.Helpers;
 using AspNetCoreStarter.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -19,7 +20,7 @@ namespace AspNetCoreStarter.Controllers
             _service = service;
         }
 
-        [Authorize]
+        [Authorize(Policies.UserAdmin)]
         [HttpGet("{id}")]
         public ActionResult<TodoReadDto> Get(int id)
         {
@@ -28,7 +29,7 @@ namespace AspNetCoreStarter.Controllers
             return Ok(result); 
         }
 
-        [Authorize(Role.Admin)]
+        [Authorize(Policies.Admin)]
         [HttpGet]
         public ActionResult<IEnumerable<TodoReadDto>> Get()
         {
@@ -37,18 +38,18 @@ namespace AspNetCoreStarter.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+        [Authorize(Policies.UserAdmin)]
         [HttpGet("for-user")]
-        public ActionResult<TodoReadDto> GetByUserId()
+        public ActionResult<IEnumerable<TodoReadDto>> GetByUserId()
         {
             int userId = Convert.ToInt32(HttpContext.Items["id"]);
 
-            TodoReadDto result = _service.GetByUserId(userId);
+            IEnumerable<TodoReadDto> result = _service.GetByUserId(userId);
 
             return Ok(result);
         }
 
-        [Authorize]
+        [Authorize(Policies.UserAdmin)]
         [HttpPost]
         public ActionResult<TodoReadDto> Create(TodoCreateDto dto)
         {
@@ -59,7 +60,7 @@ namespace AspNetCoreStarter.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+        [Authorize(Policies.User)]
         [HttpDelete]
         public ActionResult Delete(int id)
         {

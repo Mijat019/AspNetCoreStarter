@@ -11,6 +11,7 @@ namespace AspNetCoreStarter.Mappers
         {
             Id = entity.Id,
             Email = entity.Email,
+            Role = entity.Role,
             CreatedAt = entity.CreatedAt,
             UpdatedAt = entity.UpdatedAt,
         };

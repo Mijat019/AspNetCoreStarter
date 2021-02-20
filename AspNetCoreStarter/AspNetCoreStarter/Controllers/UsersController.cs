@@ -1,5 +1,6 @@
 ﻿using AspNetCoreStarter.Attributes;
 using AspNetCoreStarter.Dtos;
+using AspNetCoreStarter.Helpers;
 using AspNetCoreStarter.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -18,7 +19,7 @@ namespace AspNetCoreStarter.Controllers
             _service = service;
         }
 
-        [Authorize]
+        [Authorize(Policies.Admin)]
         [HttpGet("{id}")]
         public ActionResult<UserReadDto> Get(int id)
         {
@@ -27,7 +28,7 @@ namespace AspNetCoreStarter.Controllers
             return Ok(result); 
         }
 
-        [Authorize]
+        [Authorize(Policies.Admin)]
         [HttpGet]
         public ActionResult<IEnumerable<UserReadDto>> Get()
         {
@@ -47,6 +48,7 @@ namespace AspNetCoreStarter.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPost]
         public ActionResult<UserReadDto> Create(UserCreateDto dto)
         {
@@ -55,7 +57,7 @@ namespace AspNetCoreStarter.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+        [Authorize(Policies.Admin)]
         [HttpDelete]
         public ActionResult Delete(int id)
         {

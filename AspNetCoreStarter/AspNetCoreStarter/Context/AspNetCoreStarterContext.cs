@@ -19,7 +19,7 @@ namespace AspNetCoreStarter.Context
 
             modelBuilder.Entity<User>()
                 .Property(u => u.Role)
-                .HasDefaultValue(Role.Regular);
+                .HasDefaultValue(Role.User);
 
             // add created and updated at to all entities
             modelBuilder.Entity<User>()

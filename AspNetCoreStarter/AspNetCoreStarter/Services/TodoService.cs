@@ -17,7 +17,7 @@ namespace AspNetCoreStarter.Services
 
         public TodoReadDto Get(int id) => _repository.Get(id).ToReadDto();
 
-        public TodoReadDto GetByUserId(int id) => _repository.GetByUserId(id).ToReadDto();
+        public IEnumerable<TodoReadDto> GetByUserId(int id) => _repository.GetByUserId(id).ToReadDtos();
 
         public IEnumerable<TodoReadDto> Get() => _repository.Get().ToReadDtos();
 

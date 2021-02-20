@@ -7,7 +7,7 @@ namespace AspNetCoreStarter.Repositories.Interfaces
     {
         Todo Get(int id);
         IEnumerable<Todo> Get();
-        Todo GetByUserId(int id);
+        IEnumerable<Todo> GetByUserId(int id);
         void Create(Todo Todo);
         void Update(Todo Todo);
         void Delete(int id);

@@ -17,7 +17,7 @@ namespace AspNetCoreStarter.Repositories.Implementations
 
         public Todo Get(int id) => _context.Todos.Find(id);
 
-        public Todo GetByUserId(int id) => _context.Todos.FirstOrDefault(u => u.UserId == id);
+        public IEnumerable<Todo> GetByUserId(int id) => _context.Todos.Where(u => u.UserId == id);
 
         public IEnumerable<Todo> Get() => _context.Todos;
 

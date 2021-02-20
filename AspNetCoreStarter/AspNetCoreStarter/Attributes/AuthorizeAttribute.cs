@@ -16,17 +16,31 @@ namespace AspNetCoreStarter.Attributes
     {
         private HttpContext _httpContext;
 
-        private Role[] _requiredRoles;
+        private Role _requiredRole;
+
+        public AuthorizeAttribute() 
+        {
+            _requiredRole = Role.User;
+        }
 
         public AuthorizeAttribute(params Role[] minimalRole)
         {
-            _requiredRoles = minimalRole;
+            _requiredRole = minimalRole[0];
         }
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             _httpContext = context.HttpContext;
 
+            string token = this.GetTokenFromRequest();
+
+            Role role = this.ValidateTokenAndGetRole(token);
+
+            this.CheckUsersRole(role);
+        }
+
+        private string GetTokenFromRequest()
+        {
             string token = _httpContext.Request
                  .Headers["Authorization"]
                  .FirstOrDefault()?
@@ -35,20 +49,20 @@ namespace AspNetCoreStarter.Attributes
 
             if (token == null) throw new BusinessException("Token is missing", 401);
 
-            Role role;
+            return token;
+        }
 
+        private Role ValidateTokenAndGetRole(string token)
+        {
             try
             {
-                role = this.ValidateToken(token);
+                Role role = this.ValidateToken(token);
+
+                return role;
             }
             catch
             {
                 throw new BusinessException("Token is invalid", 401);
-            }
-
-            if (_requiredRoles.Any() && !_requiredRoles.Contains(role))
-            {
-                throw new BusinessException("You don't have the right permission", 403);
             }
         }
 
@@ -79,5 +93,13 @@ namespace AspNetCoreStarter.Attributes
 
             return (Role)Enum.Parse(typeof(Role), role);
         }
+
+        private void CheckUsersRole(Role usersRole)
+        {
+            int doesContainRole = (int)usersRole & (int)_requiredRole;
+            
+            if(doesContainRole == 0) throw new BusinessException("Forbidden", 403);
+        }
+
     }
 }

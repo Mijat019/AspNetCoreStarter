@@ -4,14 +4,16 @@ using AspNetCoreStarter.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AspNetCoreStarter.Migrations
 {
     [DbContext(typeof(AspNetCoreStarterContext))]
-    partial class AspNetCoreStarterContextModelSnapshot : ModelSnapshot
+    [Migration("20210220190136_Test")]
+    partial class Test
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
